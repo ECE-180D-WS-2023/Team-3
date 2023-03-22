@@ -111,8 +111,3 @@ if __name__ == "__main__":
         # show the user the transcription
         if test==False:
             print('\n',"You said: {}".format(guess["transcription"]))
-
-#say peice, rook, then to what location, if not acceptable move then have the person restate it 
-# have it time and if nothing picked up, reprompt the user. 
-# change the duration of listening 
-# chnage ambient noise 
