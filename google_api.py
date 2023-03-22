@@ -1,8 +1,6 @@
 #taken from: https://realpython.com/python-speech-recognition/#putting-it-all-together-a-guess-the-word-game
-import random
-import time
 
-import speech_recognition as sr
+import speech_recognition as sr #djf
 
 
 def recognize_speech_from_mic(recognizer, microphone):
@@ -28,7 +26,7 @@ def recognize_speech_from_mic(recognizer, microphone):
     # from the microphone
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+        audio = recognizer.listen(source, None , 3) # duration to listen 
 
     # set up the response object
     response = {
@@ -67,8 +65,11 @@ if __name__ == "__main__":
         while True:
             print('Speak!')
             guess = recognize_speech_from_mic(recognizer, microphone)
-    
+            
+            while(not guess["transcription"]):
+                guess = recognize_speech_from_mic(recognizer, microphone)
 
+           # if guess["success"]
             choices=[]
             length=len(guess["transcription"]["alternative"])
            
@@ -112,3 +113,6 @@ if __name__ == "__main__":
             print('\n',"You said: {}".format(guess["transcription"]))
 
 #say peice, rook, then to what location, if not acceptable move then have the person restate it 
+# have it time and if nothing picked up, reprompt the user. 
+# change the duration of listening 
+# chnage ambient noise 
