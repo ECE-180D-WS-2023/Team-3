@@ -29,12 +29,15 @@ class Chess_Gui(tk.Canvas):
 
         #Initialize grid that will store image objects
         self.grid_dict = {}
+        self.square_dict = {}
         self.letters = np.array(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
         self.nums = np.array(['1', '2', '3', '4', '5', '6', '7', '8'])
         for letter in self.letters:
             for num in self.nums:
+                self.square_dict[letter+num] = None
                 self.grid_dict[letter+num] = None
-        
+
+        self.bg_colors = ["#F5F5DC", "#964B00"]
         self.setup_board()
 
     def grid_location(self, letter:str, num:str):
@@ -134,15 +137,31 @@ class Chess_Gui(tk.Canvas):
             self.grid_dict[end_letter+end_num] = start_img
             self.move(start_img, end_x - start_x, end_y - start_y)
 
+    def reset_bg_colors(self):
+        for i in range(8):
+            for j in range(8):
+                letter = self.letters[i]
+                num = self.nums[j]
+
+                rem = (i+j+1)%2  
+                self.itemconfigure(self.square_dict[letter+num], fill=self.bg_colors[rem])
+
     def setup_board(self):
         """
         Setups the intiail board by drawing the grid and creating the initial piece images
         """
     
         #Draw board grid
-        for x in range(self.x_offset, self.x_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size):
-            for y in range(self.y_offset, self.y_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size):
-                self.create_rectangle(x, y, x + self.square_size, y + self.square_size)
+        cnt = 0
+        for i,x in enumerate(range(self.x_offset, self.x_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size)):
+            for j,y in enumerate(range(self.y_offset, self.y_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size)):
+                color = self.bg_colors[cnt%2]
+                id = self.create_rectangle(x, y, x + self.square_size, y + self.square_size, fill=color, tags='squares')
+                letter = self.letters[i]
+                num = self.nums[-(j+1)]
+                self.square_dict[letter+num] = id
+                cnt += 1
+            cnt += 1
         
         #Place starting pieces
         for letter in self.letters:
@@ -180,7 +199,8 @@ def on_connect(client, userdata, flags, rc):
     print("Connection returned result: " + str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("ece180d/central")
+    client.subscribe("ece180d/central/move")
+    client.subscribe("ece180d/central/view")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -194,7 +214,8 @@ def on_disconnect(client, userdata, rc):
 def on_message(client, userdata, message):
     gui = userdata['gui']
     board = userdata['board']
-    if(message.topic == "ece180d/central"):
+    if(message.topic == "ece180d/central/move"):
+        gui.reset_bg_colors()
         results = str(message.payload.decode())
         start_letter = results[0]
         start_num = results[1]
@@ -208,7 +229,12 @@ def on_message(client, userdata, message):
         print(board)
 
         gui.board_to_img(board)
-        #gui.move_image(start_letter,  start_num, end_letter, end_num)
+    if(message.topic == "ece180d/central/view"):
+        gui.reset_bg_colors()
+        results = str(message.payload.decode())
+        gui.itemconfigure(gui.square_dict[results], fill='green')
+        #start_square = chess.parse_square(results)
+        
 
 
 
