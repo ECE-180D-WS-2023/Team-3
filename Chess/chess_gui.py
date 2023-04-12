@@ -226,14 +226,22 @@ def on_message(client, userdata, message):
         end_square = chess.parse_square(end_letter+end_num)
         move = board.find_move(start_square, end_square)
         board.push(move)
-        print(board)
-
         gui.board_to_img(board)
     if(message.topic == "ece180d/central/view"):
         gui.reset_bg_colors()
         results = str(message.payload.decode())
+
+        #Highlight the selected piece
         gui.itemconfigure(gui.square_dict[results], fill='green')
-        #start_square = chess.parse_square(results)
+        start_square = chess.parse_square(results)
+        atts = list(board.attacks(chess.parse_square(results)))
+        for att in atts:
+            att_color = board.color_at(att)
+            if att_color == None:
+                gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='yellow')
+            elif att_color == (not board.turn):
+                gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='red')
+
         
 
 
