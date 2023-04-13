@@ -21,8 +21,8 @@ class Chess_Gui(tk.Canvas):
         #Load in the piece images which will be used to create image objects
         self.image_dict = {}
 
-        #self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
-        self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
+        self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
+        #self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
         for files in os.listdir(self.piece_path):
             name = files.split('.')[0]
             self.image_dict[name] = tk.PhotoImage(file=self.piece_path+'/'+files).subsample(10)
@@ -230,18 +230,33 @@ def on_message(client, userdata, message):
     if(message.topic == "ece180d/central/view"):
         gui.reset_bg_colors()
         results = str(message.payload.decode())
+        
 
+        # Highlight safe squares as green
+        # Squares where you can be captured as yellow
+        # Your captures as red
         #Highlight the selected piece
-        gui.itemconfigure(gui.square_dict[results], fill='green')
+        gui.itemconfigure(gui.square_dict[results], fill='blue')
         start_square = chess.parse_square(results)
-        atts = list(board.attacks(chess.parse_square(results)))
-        for att in atts:
-            att_color = board.color_at(att)
-            if att_color == None:
-                gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='yellow')
-            elif att_color == (not board.turn):
-                gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='red')
+        # atts = list(board.attacks(chess.parse_square(results)))
+        # for att in atts:
+        #     att_color = board.color_at(att)
+        #     if att_color == None:
+        #         gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='yellow')
+        #     elif att_color == (not board.turn):
+        #         gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='red')
 
+        for move in board.legal_moves:
+            if move.from_square == start_square:
+                end_color = board.color_at(move.to_square)
+                if end_color == None:
+                    #unsafe = board.is_attacked_by(not board.turn, move.to_square)
+                    if board.is_attacked_by(not board.turn, move.to_square):
+                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='yellow')
+                    else:
+                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='green')
+                elif end_color == (not board.turn):
+                    gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
         
 
 
