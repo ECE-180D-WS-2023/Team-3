@@ -31,6 +31,9 @@ def main():
                 print("You are in check!")
             print(board.legal_moves)
             start_square = input('Starting square:')
+            if start_square == 'q':
+                client.publish("ece180d/central/special", start_square, qos=1)
+                exit()
             #print("Speak starting square:")
             #start_square = speech_to_move()
             print("Start square:" + start_square)

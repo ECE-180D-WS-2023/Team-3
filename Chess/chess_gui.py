@@ -21,8 +21,8 @@ class Chess_Gui(tk.Canvas):
         #Load in the piece images which will be used to create image objects
         self.image_dict = {}
 
-        self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
-        #self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
+        #self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
+        self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
         for files in os.listdir(self.piece_path):
             name = files.split('.')[0]
             self.image_dict[name] = tk.PhotoImage(file=self.piece_path+'/'+files).subsample(10)
@@ -201,6 +201,7 @@ def on_connect(client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     client.subscribe("ece180d/central/move")
     client.subscribe("ece180d/central/view")
+    client.subscribe("ece180d/central/special")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -214,7 +215,15 @@ def on_disconnect(client, userdata, rc):
 def on_message(client, userdata, message):
     gui = userdata['gui']
     board = userdata['board']
-    if(message.topic == "ece180d/central/move"):
+    window = userdata['window']
+
+    if (message.topic == "ece180d/central/special"):
+        results = str(message.payload.decode())
+        if results == 'q':
+            client.loop_stop()
+            window.quit()
+
+    elif(message.topic == "ece180d/central/move"):
         gui.reset_bg_colors()
         results = str(message.payload.decode())
         start_letter = results[0]
@@ -227,16 +236,15 @@ def on_message(client, userdata, message):
         move = board.find_move(start_square, end_square)
         board.push(move)
         gui.board_to_img(board)
-    if(message.topic == "ece180d/central/view"):
+    elif(message.topic == "ece180d/central/view"):
         gui.reset_bg_colors()
         results = str(message.payload.decode())
         
-
         # Highlight safe squares as green
         # Squares where you can be captured as yellow
         # Your captures as red
         #Highlight the selected piece
-        gui.itemconfigure(gui.square_dict[results], fill='blue')
+        gui.itemconfigure(gui.square_dict[results], fill='#ADD8E6')
         start_square = chess.parse_square(results)
         # atts = list(board.attacks(chess.parse_square(results)))
         # for att in atts:
@@ -252,9 +260,9 @@ def on_message(client, userdata, message):
                 if end_color == None:
                     #unsafe = board.is_attacked_by(not board.turn, move.to_square)
                     if board.is_attacked_by(not board.turn, move.to_square):
-                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='yellow')
+                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#EBA937')
                     else:
-                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='green')
+                        gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#32CD32')
                 elif end_color == (not board.turn):
                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
         
@@ -270,7 +278,7 @@ if __name__ == "__main__":
     gui = Chess_Gui(board,window, 720, 720)
     gui.place(x=0,y=0,anchor="nw")
 
-    client_userdata = {'gui':gui, 'board':board}
+    client_userdata = {'gui':gui, 'board':board, 'window':window}
     client = mqtt.Client(userdata=client_userdata)
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
