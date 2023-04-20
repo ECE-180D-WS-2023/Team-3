@@ -150,7 +150,7 @@ class Chess_Gui(tk.Canvas):
         """
         Setups the intiail board by drawing the grid and creating the initial piece images
         """
-    
+
         #Draw board grid
         cnt = 0
         for i,x in enumerate(range(self.x_offset, self.x_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size)):
@@ -163,6 +163,11 @@ class Chess_Gui(tk.Canvas):
                 cnt += 1
             cnt += 1
         
+        for i,x in enumerate(range(self.x_offset, self.x_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size)):
+            self.create_text(x + 0.5*self.square_size, self.y_offset + (self.num_squares+0.5)*self.square_size, text=self.letters[i], font=('arial','30','bold'))
+        for i,y in enumerate(range(self.y_offset, self.y_offset + self.square_size * (self.num_squares - 1) + 1, self.square_size)):
+            self.create_text(self.x_offset - 0.5*self.square_size, y + 0.5*self.square_size, text=self.nums[-i-1], font=('arial','30','bold'))
+
         #Place starting pieces
         for letter in self.letters:
             for num in ['1', '2', '7', '8']:
