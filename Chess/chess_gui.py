@@ -226,7 +226,10 @@ def on_message(client, userdata, message):
         results = str(message.payload.decode())
         if results == 'q':
             window.quit()
-            window.destroy()
+            try:
+                window.destroy()
+            except:
+                quit()
 
     elif(message.topic == "ece180d/central/move"):
         gui.reset_bg_colors()
