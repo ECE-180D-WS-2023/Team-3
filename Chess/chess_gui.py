@@ -225,8 +225,8 @@ def on_message(client, userdata, message):
     if (message.topic == "ece180d/central/special"):
         results = str(message.payload.decode())
         if results == 'q':
-            client.loop_stop()
             window.quit()
+            window.destroy()
 
     elif(message.topic == "ece180d/central/move"):
         gui.reset_bg_colors()

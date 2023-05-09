@@ -2,6 +2,7 @@ import chess
 import paho.mqtt.client as mqtt
 from chess_speech import speech_to_move
 import chess.engine
+import time
 
 def main():
 
@@ -34,6 +35,7 @@ def main():
             start_square = input('Starting square:')
             if start_square == 'q':
                 client.publish("ece180d/central/special", start_square, qos=1)
+                time.sleep(1)
                 exit()
             elif start_square == 'eng':
                 #engine = chess.engine.SimpleEngine.popen_uci("D:\Documents\ECE-180DA\\team3\Team-3\Stockfish\stockfish-windows-2022-x86-64-avx2")
@@ -86,16 +88,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-
-
-
-###
-#Use board.pieces with chess.piece_type, and board.turn to get a square set
-#From the square set can convert to list and it gives squares where the pieces are at
-#Use this to color highlight and potentially can try and find legal moves from that as the 
-#starting square somehow and maybe highlight those and if it's a capture can do diff color
-#Can also look at the board.peek to get move order and somehow display that.
-###
-
-def try_start_piece(board:chess.Board, piece_name:str):
-    piece_pos = list(board.pieces(chess.PIECE_NAMES.index(piece_name), board.turn))
