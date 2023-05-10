@@ -13,19 +13,24 @@ def gesture_cap():
     detector = HandDetector(maxHands=1)
     initialTime = time.time()
 
-    success, img = cap.read()
-    imgScaled = cv2.resize(img, (0,0), None, 0.375, 0.375)
+    while True:
+        success, img = cap.read()
+        imgScaled = cv2.resize(img, (0,0), None, 0.375, 0.375)
 
-    hands, img = detector.findHands(imgScaled)
+        hands, img = detector.findHands(imgScaled)
 
-    gesture = "NA"
+        gesture = "NA"
 
-    while time.time() - initialTime < 3:
+        #cv2.imshow("Image", imgScaled)
+        #cv2.waitKey(1)
         if hands:
             hand = hands[0]
             fingers = detector.fingersUp(hand)
             if fingers == [0,1,0,0,0]:
                 gesture = "y"
+                return gesture
             elif fingers == [0,1,1,0,0]:
                 gesture = "n"
-    return gesture
+                return gesture
+if __name__ == '__main__':
+    gesture_cap()
