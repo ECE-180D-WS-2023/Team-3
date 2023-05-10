@@ -1,6 +1,7 @@
 import chess
 import paho.mqtt.client as mqtt
 from chess_speech import speech_to_move
+from speed_tutorial import tutorial
 import chess.engine
 import time
 
@@ -66,10 +67,16 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                 continue
         board.push(move)
     print(board.outcome().result())
-    client.loop_stop()
 
 
 def main(board: chess.Board):
+    while True:
+        run_game_instance(board, client)
+        board.reset()
+        client.publish("ece180d/central/reset", "test", qos=1)
+
+    
+if __name__ == '__main__':
 
     def on_connect(client, userdata, flags, rc):
         print("Connection returned result: " + str(rc))
@@ -88,13 +95,11 @@ def main(board: chess.Board):
     client.connect_async('mqtt.eclipseprojects.io')
     client.loop_start()
 
-    while True:
-        run_game_instance(board, client)
-        board.reset()
-        client.publish("ece180d/central/reset", "test", qos=1)
-
-    
-if __name__ == '__main__':
     reset = True
     board = chess.Board()
+
+    play_tut = input("Would you like to play the tutorial? (y/n)")
+    if play_tut == 'y':
+        tutorial()
     main(board)
+    client.loop_stop()

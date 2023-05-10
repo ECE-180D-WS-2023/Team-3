@@ -34,9 +34,8 @@ def recognize_speech_from_mic(recognizer, microphone):
         response["error"] = "Unable to recognize speech"
 
     return response
-
-if __name__ == "__main__":
-    state=0
+def tutorial():
+    state=1
     once=True
     while True:
         test=False
@@ -47,10 +46,6 @@ if __name__ == "__main__":
             print('Let''s try and move the pawn from C2 to C4')
             print('If there is no action after 5 seconds, repeat your command')
             once=False
-
-        if state==0:
-            print("Say Pawn")
-            curr_word="Pawn"
 
         if state==1:
             print("Now state the starting location (C2)")
@@ -93,8 +88,5 @@ if __name__ == "__main__":
         
         # show the user the transcription
         if test==False:
-            print('\n',"The word you said was not recognized as acceptable. Here are some thinks we think you said:{}".format(guess["transcription"]))
+            print('\n',"The word you said was not recognized as acceptable. Here are some words we think you said:{}".format(guess["transcription"]))
             print("Try again: ")
-
-
-    #speech_to_move()
