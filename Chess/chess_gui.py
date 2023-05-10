@@ -4,6 +4,7 @@ import numpy as np
 import chess
 import os
 from tkinter import *
+import time
 
 class Chess_Gui(tk.Canvas):
     
@@ -207,6 +208,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/move")
     client.subscribe("ece180d/central/view")
     client.subscribe("ece180d/central/special")
+    client.subscribe("ece180d/central/reset")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -230,6 +232,14 @@ def on_message(client, userdata, message):
                 window.destroy()
             except:
                 quit()
+    
+    elif (message.topic == "ece180d/central/reset"):
+        winner = "white" if board.outcome().winner else "black"
+        win_text = gui.create_text(360,710, text="Winner is " + winner + "...starting new game...", font=('arial','10','bold'))
+        board.reset()
+        time.sleep(5)
+        gui.delete(win_text)
+        gui.board_to_img(board)
 
     elif(message.topic == "ece180d/central/move"):
         gui.reset_bg_colors()

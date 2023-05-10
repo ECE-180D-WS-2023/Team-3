@@ -4,29 +4,9 @@ from chess_speech import speech_to_move
 import chess.engine
 import time
 
-def main():
 
-    def on_connect(client, userdata, flags, rc):
-        print("Connection returned result: " + str(rc))
-
-    # The callback of the client when it disconnects.
-    def on_disconnect(client, userdata, rc):
-        if rc != 0:
-            print('Unexpected Disconnect')
-        else:
-            print('Expected Disconnect')
-
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_disconnect = on_disconnect
-
-    client.connect_async('mqtt.eclipseprojects.io')
-    client.loop_start()
-
-
-    
-    board = chess.Board()
-    while (not board.is_checkmate()):
+def run_game_instance(board: chess.Board, client: mqtt.Client):
+    while (not board.is_game_over()):
         while True:
             print(board)
             if board.is_check():
@@ -56,11 +36,13 @@ def main():
                 continue
             
             make_move = input("Confirm starting square (y/n)?")
+            #print("Speak confirmation or view choices (y/n)")
+            #make_move = speech_to_move()
             if make_move == 'y':
                 end_square = input('Ending square:')
                 #print("Speak ending square")
                 #end_square = speech_to_move()
-                print("End square" + end_square)
+                print("End square:" + end_square)
                 try:
                     end = chess.parse_square(end_square)
                 except:
@@ -85,6 +67,34 @@ def main():
         board.push(move)
     print(board.outcome().result())
     client.loop_stop()
+
+
+def main(board: chess.Board):
+
+    def on_connect(client, userdata, flags, rc):
+        print("Connection returned result: " + str(rc))
+
+    # The callback of the client when it disconnects.
+    def on_disconnect(client, userdata, rc):
+        if rc != 0:
+            print('Unexpected Disconnect')
+        else:
+            print('Expected Disconnect')
+
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_disconnect = on_disconnect
+
+    client.connect_async('mqtt.eclipseprojects.io')
+    client.loop_start()
+
+    while True:
+        run_game_instance(board, client)
+        board.reset()
+        client.publish("ece180d/central/reset", "test", qos=1)
+
     
 if __name__ == '__main__':
-    main()
+    reset = True
+    board = chess.Board()
+    main(board)
