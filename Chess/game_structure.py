@@ -2,9 +2,21 @@ import chess
 import paho.mqtt.client as mqtt
 from chess_speech import speech_to_move
 from speed_tutorial import tutorial
+from gesture_detector import gesture_cap
 import chess.engine
 import time
 
+def quit_input(client: mqtt.Client, start_square):
+    client.publish("ece180d/central/special", start_square, qos=1)
+    time.sleep(1)
+
+def eng_input(client: mqtt.Client):
+    engine = chess.engine.SimpleEngine.popen_uci("D:\Documents\ECE-180DA\\team3\Team-3\Stockfish\stockfish-windows-2022-x86-64-avx2")
+    #engine = chess.engine.SimpleEngine.popen_uci("C:/Users/neilk/Documents/ECE180/Team3/Team-3/Stockfish/stockfish-windows-2022-x86-64-avx2")
+    result = engine.play(board, chess.engine.Limit(time=0.01))
+    move = result.move
+    client.publish("ece180d/central/move", move.uci(), qos=1)
+    engine.quit()
 
 def run_game_instance(board: chess.Board, client: mqtt.Client):
     while (not board.is_game_over()):
@@ -13,39 +25,39 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
             if board.is_check():
                 print("You are in check!")
             print(board.legal_moves)
-            start_square = input('Starting square:')
-            if start_square == 'q':
-                client.publish("ece180d/central/special", start_square, qos=1)
-                time.sleep(1)
-                exit()
-            elif start_square == 'eng':
-                #engine = chess.engine.SimpleEngine.popen_uci("D:\Documents\ECE-180DA\\team3\Team-3\Stockfish\stockfish-windows-2022-x86-64-avx2")
-                engine = chess.engine.SimpleEngine.popen_uci("C:/Users/neilk/Documents/ECE180/Team3/Team-3/Stockfish/stockfish-windows-2022-x86-64-avx2")
-                result = engine.play(board, chess.engine.Limit(time=0.01))
-                move = result.move
-                client.publish("ece180d/central/move", move.uci(), qos=1)
-                engine.quit()
-                break
 
-            #print("Speak starting square:")
-            #start_square = speech_to_move()
-            print("Start square:" + start_square)
-            try:
-                start = chess.parse_square(start_square)
-            except:
-                print('Not a valid square')
-                continue
+            #start_square = input('Starting square:')
             
-            make_move = input("Confirm starting square (y/n)?")
-            #print("Speak confirmation or view choices (y/n)")
-            #make_move = speech_to_move()
+            print("Speak starting square:")
+            start_square = speech_to_move()
+
+            if start_square == 'quit':
+                quit_input(client, start_square)
+                exit()
+            elif start_square == 'engine':
+                eng_input(client)
+                break
+            else:
+                print("Start square:" + start_square)
+                try:
+                    start = chess.parse_square(start_square)
+                except:
+                    print('Not a valid square')
+                    continue
+            
+            make_move = input("Confirm starting square (y/n)? ")
+            #print("Gesture to view or proceed with move (1/2) fingers ")
+            #make_move = gesture_cap()
             if make_move == 'y':
-                end_square = input('Ending square:')
-                #print("Speak ending square")
-                #end_square = speech_to_move()
+                #end_square = input('Ending square:')
+                print("Speak ending square")
+                end_square = speech_to_move()
                 print("End square:" + end_square)
                 try:
                     end = chess.parse_square(end_square)
+                    confirm_move = input(f"Would you like to make the move {start_square}{end_square} (y/n)? ")
+                    if confirm_move == 'n':
+                        continue
                 except:
                     print('Not a valid square')
                     continue

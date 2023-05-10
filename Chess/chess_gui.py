@@ -226,7 +226,7 @@ def on_message(client, userdata, message):
 
     if (message.topic == "ece180d/central/special"):
         results = str(message.payload.decode())
-        if results == 'q':
+        if results == 'quit':
             window.quit()
             try:
                 window.destroy()

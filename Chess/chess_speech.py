@@ -75,7 +75,7 @@ def speech_to_move():
             # add the location to the list
             locations.append(loc)
         
-    acceptable_words = ["pawn", "bishop", "rook", "knight","queen","king","Pawn", "Bishop", "Rook", "Knight","Queen","King"]
+    acceptable_words = ["quit", "Quit", "engine", "Engine"]
     acceptable_words+=locations
     #print(acceptable_words)
 
@@ -91,5 +91,4 @@ def speech_to_move():
 
     return move.lower()
 
-#speech_to_move()
 
