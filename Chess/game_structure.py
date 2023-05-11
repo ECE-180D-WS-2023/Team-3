@@ -19,6 +19,45 @@ def eng_input(client: mqtt.Client):
     engine.quit()
     return move
 
+def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
+    p1 = p2 = p3 = p4 = p5 = p6 = p7 = p8 = False
+    phase_list = [p1, p2, p3, p4, p5, p6, p7, p8]
+
+    move_str = ['f2', 'f3', 'e7', 'e5', 'g2', 'g4', 'd8', 'h4']
+
+    print('WELCOME TO WIZARDING CHESS')
+    print('TOGETHER WE WILL WALK YOU THROUGH A 4 MOVE CHECKMATE')
+
+    for i in range(8):
+        while not phase_list[i]:
+            print(f"Speak the starting square ({move_str[i]})")
+            start_square = speech_to_move()
+            print(f"Recognized word: {start_square}")
+            print("Now we want to make sure it was correctly recognized. ")
+            print("To confirm raise one finger to the camera otherwise raise 2 fingers.")
+            gesture = gesture_cap()
+            if gesture == 'y':
+                if start_square == move_str[i]:
+                    phase_list[i] = True
+                    print("Nicely done!")
+
+                    if i%2 == 1:
+                        start = chess.parse_square(move_str[i-1])
+                        end = chess.parse_square(move_str[i])
+                        move = board.find_move(start, end)
+
+                        board.push(move)
+                        client.publish("ece180d/central/move", move_str[i-1]+move_str[i], qos=1)
+
+                else:
+                    print("Hmmm you confirmed the move but it didn't match what we wanted try again...")
+            else:
+                print("Let's try again...")
+                continue
+    board.reset()
+    client.publish("ece180d/central/reset", "test", qos=1)
+    
+
 def run_game_instance(board: chess.Board, client: mqtt.Client):
     while (not board.is_game_over()):
         while True:
@@ -113,6 +152,6 @@ if __name__ == '__main__':
 
     play_tut = input("Would you like to play the tutorial? (y/n)")
     if play_tut == 'y':
-        tutorial()
+        run_mate_tutorial()
     main(board)
     client.loop_stop()
