@@ -34,6 +34,7 @@ def recognize_speech_from_mic(recognizer, microphone):
         response["error"] = "Unable to recognize speech"
 
     return response
+
 def tutorial():
     state=1
     once=True
