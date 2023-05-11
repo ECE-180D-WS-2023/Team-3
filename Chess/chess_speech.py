@@ -75,12 +75,13 @@ def speech_to_move():
             # add the location to the list
             locations.append(loc)
         
-    acceptable_words = ["quit", "Quit", "engine", "Engine"]
+    acceptable_words = ["QUIT","ENGINE"]
     acceptable_words+=locations
     #print(acceptable_words)
 
     move = "None"
     for word in choices:
+        word = word.upper()
         if word in acceptable_words:
             move = word
             break
@@ -90,5 +91,13 @@ def speech_to_move():
         return speech_to_move()
 
     return move.lower()
+
+def testing():
+    while True:
+        speech_to_move()
+
+
+if __name__ == '__main__':
+    testing()
 
 

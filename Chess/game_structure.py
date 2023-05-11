@@ -17,6 +17,7 @@ def eng_input(client: mqtt.Client):
     move = result.move
     client.publish("ece180d/central/move", move.uci(), qos=1)
     engine.quit()
+    return move
 
 def run_game_instance(board: chess.Board, client: mqtt.Client):
     while (not board.is_game_over()):
@@ -35,7 +36,7 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                 quit_input(client, start_square)
                 exit()
             elif start_square == 'engine':
-                eng_input(client)
+                move = eng_input(client)
                 break
             else:
                 print("Start square:" + start_square)
