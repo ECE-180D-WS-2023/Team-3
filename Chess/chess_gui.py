@@ -154,9 +154,9 @@ class Chess_Gui(tk.Canvas):
     def toggle_color(self):
         if self.flash_square:
             curr_color = self.itemcget(self.toggle_square_id, "fill")
-            next_color = "purple" if curr_color == self.toggle_def_color else self.toggle_def_color
+            next_color = "#ADD8E6" if curr_color == self.toggle_def_color else self.toggle_def_color
             self.itemconfigure(self.toggle_square_id, fill=next_color)
-            self.after(1000, self.toggle_color)
+            self.after(400, self.toggle_color)
 
     def setup_board(self):
         """
@@ -221,7 +221,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/special")
     client.subscribe("ece180d/central/reset")
     client.subscribe("ece180d/central/start")
-    client.subscribe("ece180d/central/stop")
+    client.subscribe("ece180d/central/confirm")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -255,6 +255,7 @@ def on_message(client, userdata, message):
         gui.board_to_img(board)
 
     elif(message.topic == "ece180d/central/move"):
+        gui.flash_square = False
         gui.reset_bg_colors()
         results = str(message.payload.decode())
         start_letter = results[0]
@@ -267,7 +268,11 @@ def on_message(client, userdata, message):
         move = board.find_move(start_square, end_square)
         board.push(move)
         gui.board_to_img(board)
+
+
+
     elif(message.topic == "ece180d/central/view"):
+        gui.flash_square = False
         gui.reset_bg_colors()
         results = str(message.payload.decode())
         
@@ -290,6 +295,7 @@ def on_message(client, userdata, message):
                 elif end_color == (not board.turn):
                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
     elif(message.topic == "ece180d/central/start"):
+        gui.reset_bg_colors()
         results = str(message.payload.decode())
         square_id = gui.square_dict[results]
 
@@ -297,7 +303,7 @@ def on_message(client, userdata, message):
         gui.toggle_square_id = square_id
         gui.toggle_def_color = gui.itemcget(square_id, "fill")
         gui.toggle_color()
-    elif(message.topic == "ece180d/central/stop"):
+    elif(message.topic == "ece180d/central/confirm"):
         results = str(message.payload.decode())
         gui.flash_square = False
         square_id = gui.square_dict[results]
