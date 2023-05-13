@@ -19,6 +19,10 @@ class Chess_Gui(tk.Canvas):
         self.x_offset = 80
         self.y_offset = 10
 
+        self.flash_square = False
+        self.toggle_square_id = 0
+        self.toggle_def_color = ""
+
         #Load in the piece images which will be used to create image objects
         self.image_dict = {}
 
@@ -147,6 +151,13 @@ class Chess_Gui(tk.Canvas):
                 rem = (i+j+1)%2  
                 self.itemconfigure(self.square_dict[letter+num], fill=self.bg_colors[rem])
 
+    def toggle_color(self):
+        if self.flash_square:
+            curr_color = self.itemcget(self.toggle_square_id, "fill")
+            next_color = "purple" if curr_color == self.toggle_def_color else self.toggle_def_color
+            self.itemconfigure(self.toggle_square_id, fill=next_color)
+            self.after(1000, self.toggle_color)
+
     def setup_board(self):
         """
         Setups the intiail board by drawing the grid and creating the initial piece images
@@ -209,6 +220,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/view")
     client.subscribe("ece180d/central/special")
     client.subscribe("ece180d/central/reset")
+    client.subscribe("ece180d/central/start")
+    client.subscribe("ece180d/central/stop")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -264,13 +277,6 @@ def on_message(client, userdata, message):
         #Highlight the selected piece
         gui.itemconfigure(gui.square_dict[results], fill='#ADD8E6')
         start_square = chess.parse_square(results)
-        # atts = list(board.attacks(chess.parse_square(results)))
-        # for att in atts:
-        #     att_color = board.color_at(att)
-        #     if att_color == None:
-        #         gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='yellow')
-        #     elif att_color == (not board.turn):
-        #         gui.itemconfigure(gui.square_dict[chess.square_name(att)], fill='red')
 
         for move in board.legal_moves:
             if move.from_square == start_square:
@@ -283,6 +289,19 @@ def on_message(client, userdata, message):
                         gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#32CD32')
                 elif end_color == (not board.turn):
                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
+    elif(message.topic == "ece180d/central/start"):
+        results = str(message.payload.decode())
+        square_id = gui.square_dict[results]
+
+        gui.flash_square = True
+        gui.toggle_square_id = square_id
+        gui.toggle_def_color = gui.itemcget(square_id, "fill")
+        gui.toggle_color()
+    elif(message.topic == "ece180d/central/stop"):
+        results = str(message.payload.decode())
+        gui.flash_square = False
+        square_id = gui.square_dict[results]
+        gui.itemconfigure(gui.square_dict[results], fill='#32CD32')
         
 
 
@@ -292,7 +311,7 @@ if __name__ == "__main__":
     board = chess.Board()
     window = tk.Tk()
     window.title('Chess Test')
-    window.geometry('800x800')
+    window.geometry('1200x800')
     gui = Chess_Gui(board,window, 720, 720)
     gui.place(x=0,y=0,anchor="nw")
 

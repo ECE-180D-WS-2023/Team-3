@@ -88,10 +88,12 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
             #print("Gesture to view or proceed with move (1/2) fingers ")
             #make_move = gesture_cap()
             if make_move == 'y':
+                client.publish("ece180d/central/start", start_square, qos=1)
                 end_square = input('Ending square:')
                 #print("Speak ending square")
                 #end_square = speech_to_move()
                 print("End square:" + end_square)
+                client.publish("ece180d/central/stop", start_square, qos=1)
                 try:
                     end = chess.parse_square(end_square)
                     confirm_move = input(f"Would you like to make the move {start_square}{end_square} (y/n)? ")
