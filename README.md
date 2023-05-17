@@ -1,6 +1,6 @@
 # Team-3
 
-## WElLCOM TO WIZARDING CHESS 
+## WELCOME TO WIZARDING CHESS 
  
 ### Environments
 
