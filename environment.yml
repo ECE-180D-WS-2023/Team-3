@@ -124,7 +124,6 @@ dependencies:
   - wheel=0.37.1=pyhd3eb1b0_0
   - win_inet_pton=1.1.0=pyhd8ed1ab_6
   - wincertstore=0.2=py310haa95532_2
-  - xz=5.2.10=h8cc25b3_0
   - yarl=1.7.2=py310he2412df_2
   - zlib=1.2.13=h8cc25b3_0
   - zstd=1.5.2=h19a0ad4_0
