@@ -1,4 +1,4 @@
-name: myenv
+name: chessenv
 channels:
   - anaconda
   - conda-forge
@@ -147,4 +147,3 @@ dependencies:
       - pywin32==305
       - sounddevice==0.4.6
       - soundfile==0.11.0
-prefix: C:\Users\nazan\anaconda3\envs\myenv
