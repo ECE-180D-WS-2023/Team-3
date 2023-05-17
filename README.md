@@ -11,7 +11,7 @@ You can run it on anaconda by first downloading the file, open the location on a
 
 Now that the environment is created, activate it by 
 
-`conda activate <pick a name>`
+`conda activate chessenv`
 
 ### Starting The Game
 There are a few steps to play the online game. 
