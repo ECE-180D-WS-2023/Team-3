@@ -18,7 +18,7 @@ There are a few steps to play the online game.
 1) Download our git page
 2) In chess_gui.py, update "self.piece_path" to where you have the Piece_images folder saved within the files downloaded (make sure to use / slashes)
 3) In game_structure.py, update "engine = chess.engine.SimpleEngine.popen_uci" to where you have the stockfish folder saved
-4) Open two anaconda windows and open the file that the 'chess' folder is saved under
+4) Open two anaconda windows (make sure you are in the chessenv) and open the file that the 'chess' folder is saved under
 5) Run chess_gui.py first then game_structure.py in the other command window  (command is: python chess_gui.py)
 6) Now the game will help you learn how to play via the tutorial 
 
