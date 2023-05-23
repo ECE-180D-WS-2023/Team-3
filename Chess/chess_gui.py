@@ -222,6 +222,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/reset")
     client.subscribe("ece180d/central/start")
     client.subscribe("ece180d/central/confirm")
+    client.subscribe("ece180d/central/cancel")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -308,6 +309,10 @@ def on_message(client, userdata, message):
         gui.flash_square = False
         square_id = gui.square_dict[results]
         gui.itemconfigure(gui.square_dict[results], fill='#32CD32')
+    elif(message.topic =="ece180d/central/cancel"):
+        gui.flash_square = False
+        gui.reset_bg_colors()
+
         
 
 

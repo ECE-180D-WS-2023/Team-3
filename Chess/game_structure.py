@@ -99,6 +99,7 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                     client.publish("ece180d/central/start", end_square, qos=1)
                     confirm_move = input(f"Would you like to make the move {start_square}{end_square} (y/n)? ")
                     if confirm_move == 'n':
+                        client.publish("ece180d/central/cancel", qos=1)
                         continue
                 except:
                     print('Not a valid square')
