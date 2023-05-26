@@ -103,6 +103,7 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                         continue
                 except:
                     print('Not a valid square')
+                    client.publish("ece180d/central/cancel", qos=1)
                     continue
                 try:
                     move = board.find_move(start, end)
@@ -117,7 +118,7 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                     else:
                         print('Invalid move try again')
             elif make_move =='n':
-                client.publish("ece180d/central/view", start_square, qos=1)
+                client.publish("ece180d/central/cancel", start_square, qos=1)
             else:
                 continue
         board.push(move)

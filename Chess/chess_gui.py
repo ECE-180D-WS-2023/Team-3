@@ -272,16 +272,36 @@ def on_message(client, userdata, message):
 
 
 
-    elif(message.topic == "ece180d/central/view"):
-        gui.flash_square = False
-        gui.reset_bg_colors()
-        results = str(message.payload.decode())
+    # elif(message.topic == "ece180d/central/view"):
+    #     gui.flash_square = False
+    #     gui.reset_bg_colors()
+    #     results = str(message.payload.decode())
         
-        # Highlight safe squares as green
-        # Squares where you can be captured as yellow
-        # Your captures as red
-        #Highlight the selected piece
-        gui.itemconfigure(gui.square_dict[results], fill='#ADD8E6')
+    #     # Highlight safe squares as green
+    #     # Squares where you can be captured as yellow
+    #     # Your captures as red
+    #     #Highlight the selected piece
+    #     gui.itemconfigure(gui.square_dict[results], fill='#ADD8E6')
+    #     start_square = chess.parse_square(results)
+
+    #     for move in board.legal_moves:
+    #         if move.from_square == start_square:
+    #             end_color = board.color_at(move.to_square)
+    #             if end_color == None:
+    #                 #unsafe = board.is_attacked_by(not board.turn, move.to_square)
+    #                 if board.is_attacked_by(not board.turn, move.to_square):
+    #                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#EBA937')
+    #                 else:
+    #                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#32CD32')
+    #             elif end_color == (not board.turn):
+    #                 gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
+
+    
+    elif(message.topic == "ece180d/central/start"):
+        gui.reset_bg_colors()
+
+        results = str(message.payload.decode())
+
         start_square = chess.parse_square(results)
 
         for move in board.legal_moves:
@@ -295,9 +315,11 @@ def on_message(client, userdata, message):
                         gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='#32CD32')
                 elif end_color == (not board.turn):
                     gui.itemconfigure(gui.square_dict[chess.square_name(move.to_square)], fill='red')
-    elif(message.topic == "ece180d/central/start"):
-        gui.reset_bg_colors()
+
         results = str(message.payload.decode())
+        square_id = gui.square_dict[results]
+
+
         square_id = gui.square_dict[results]
 
         gui.flash_square = True
