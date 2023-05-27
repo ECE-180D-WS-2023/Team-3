@@ -29,14 +29,26 @@ def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
 
     for i in range(8):
         while not phase_list[i]:
-            print(f"Speak the starting square ({move_str[i]})")
-            start_square = speech_to_move()
-            print(f"Recognized word: {start_square}")
+            print(f"Speak the square ({move_str[i]})")
+            #square = speech_to_move()
+            square = input()
+            
+            try:
+                valid = chess.parse_square(square)
+                client.publish("ece180d/central/start", square, qos=1)
+                if i%2 == 0:
+                    client.publish("ece180d/central/view", square, qos=1)
+            except:
+                print('Not a valid square')
+                continue
+            
+            print(f"Recognized word: {square}")
             print("Now we want to make sure it was correctly recognized. ")
             print("To confirm raise one finger to the camera otherwise raise 2 fingers.")
-            gesture = gesture_cap()
+            #gesture = gesture_cap()
+            gesture = input("y/n")
             if gesture == 'y':
-                if start_square == move_str[i]:
+                if square == move_str[i]:
                     phase_list[i] = True
                     print("Nicely done!")
 
@@ -47,11 +59,15 @@ def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
 
                         board.push(move)
                         client.publish("ece180d/central/move", move_str[i-1]+move_str[i], qos=1)
+                    else:
+                        client.publish("ece180d/central/confirm", square, qos=1)
 
                 else:
-                    print("Hmmm you confirmed the move but it didn't match what we wanted try again...")
+                    print("Hmmm you confirmed the square but it didn't match what we wanted try again...")
+                    client.publish("ece180d/central/cancel", qos=1)
             else:
                 print("Let's try again...")
+                client.publish("ece180d/central/cancel", qos=1)
                 continue
     board.reset()
     client.publish("ece180d/central/reset", "test", qos=1)
@@ -84,6 +100,7 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                     print('Not a valid square')
                     continue
             client.publish("ece180d/central/start", start_square, qos=1)
+            client.publish("ece180d/central/view", start_square, qos=1)
 
             make_move = input("Confirm starting square (y/n)? ")
             #print("Gesture to view or proceed with move (1/2) fingers ")
@@ -117,9 +134,11 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
                         print('Cannot move your king into check!')
                     else:
                         print('Invalid move try again')
+                    client.publish("ece180d/central/cancel", qos=1)
             elif make_move =='n':
-                client.publish("ece180d/central/cancel", start_square, qos=1)
+                client.publish("ece180d/central/cancel", qos=1)
             else:
+                client.publish("ece180d/central/cancel", qos=1)
                 continue
         board.push(move)
     print(board.outcome().result())
