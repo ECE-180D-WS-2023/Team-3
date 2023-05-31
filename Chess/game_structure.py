@@ -92,6 +92,9 @@ def run_game_instance(board: chess.Board, client: mqtt.Client):
             elif start_square == 'engine':
                 move = eng_input(client)
                 break
+            elif start_square == 'testing':
+                client.publish("ece180d/central/testing", start_square, qos=1)
+                continue
             else:
                 print("Start square:" + start_square)
                 try:

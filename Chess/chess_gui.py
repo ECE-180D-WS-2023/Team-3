@@ -228,6 +228,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/start")
     client.subscribe("ece180d/central/confirm")
     client.subscribe("ece180d/central/cancel")
+    client.subscribe("ece180d/central/testing")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -253,8 +254,13 @@ def on_message(client, userdata, message):
                 quit()
     
     elif (message.topic == "ece180d/central/reset"):
-        winner = "white" if board.outcome().winner else "black"
-        win_text = gui.create_text(360,710, text="Winner is " + winner + "...starting new game...", font=('arial','10','bold'))
+        winner = "White" if board.outcome().winner else "Black"
+        win_text = gui.create_text(400,330, text=winner + " wins!", font=('arial','10','bold'))
+        x0, y0, x1, y1 = gui.bbox(win_text)
+        margin = 4
+        coords = (x0-margin, y0-margin, x1+margin, y1+margin)
+        rect_text = gui.create_rectangle(coords, outline="black", fill='white')
+        gui.lift(win_text, rect_text)
         board.reset()
         time.sleep(5)
         gui.delete(win_text)
@@ -323,10 +329,9 @@ def on_message(client, userdata, message):
     elif(message.topic == "ece180d/central/cancel"):
         gui.flash_square = False
         gui.reset_bg_colors(True)
-
+    
+    #elif(message.topic == "ece180d/central/testing"):
         
-
-
 
 if __name__ == "__main__":
     #Create Tkinter Window
@@ -334,7 +339,7 @@ if __name__ == "__main__":
     window = tk.Tk()
     window.title('Chess Test')
     window.geometry('1200x800')
-    gui = Chess_Gui(board,window, 720, 720)
+    gui = Chess_Gui(board,window, 1200, 800)
     gui.place(x=0,y=0,anchor="nw")
 
     client_userdata = {'gui':gui, 'board':board, 'window':window}
