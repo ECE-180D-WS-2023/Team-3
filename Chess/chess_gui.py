@@ -215,6 +215,9 @@ class Chess_Gui(tk.Canvas):
                     else:
                         self.place_image(letter, num, 'king_black') 
 
+        #Add text to indicate who's turn it is
+        self.turn_id = self.create_text(self.b_width/2 + self.x_offset/2, self.y_offset + self.b_height, text="WHITE TO MOVE", font=('arial','15','bold'))
+
 # 0. define callbacks - functions that run when events happen.
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -279,6 +282,9 @@ def on_message(client, userdata, message):
         end_square = chess.parse_square(end_letter+end_num)
         move = board.find_move(start_square, end_square)
         board.push(move)
+
+        turn = "WHITE" if board.turn else "BLACK"
+        gui.itemconfigure(gui.turn_id, text=turn+" TO MOVE")
         gui.board_to_img(board)
 
 
