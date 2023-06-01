@@ -27,9 +27,11 @@ def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
     print('WELCOME TO WIZARDING CHESS')
     print('TOGETHER WE WILL WALK YOU THROUGH A 4 MOVE CHECKMATE')
 
+
     for i in range(8):
         while not phase_list[i]:
             print(f"Speak the square ({move_str[i]})")
+            client.publish("ece180d/central/tutorial", f"Speak the square ({move_str[i]})", qos=1)
             #square = speech_to_move()
             square = input()
             
@@ -45,6 +47,9 @@ def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
             print(f"Recognized word: {square}")
             print("Now we want to make sure it was correctly recognized. ")
             print("To confirm raise one finger to the camera otherwise raise 2 fingers.")
+
+            client.publish("ece180d/central/tutorial", "To confirm raise one finger to the camera otherwise raise 2 fingers", qos=1)
+
             #gesture = gesture_cap()
             gesture = input("y/n")
             if gesture == 'y':
@@ -67,7 +72,8 @@ def run_mate_tutorial(board: chess.Board, client: mqtt.Client):
                     client.publish("ece180d/central/cancel", qos=1)
             else:
                 print("Let's try again...")
-                client.publish("ece180d/central/cancel", qos=1)
+                if i%2 == 0:
+                    client.publish("ece180d/central/cancel", qos=1)
                 continue
     board.reset()
     client.publish("ece180d/central/reset", "test", qos=1)

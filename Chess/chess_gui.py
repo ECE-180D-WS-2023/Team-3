@@ -227,6 +227,13 @@ class Chess_Gui(tk.Canvas):
         head_id = self.create_text(self.b_width + 2*self.square_size + self.x_offset, self.y_offset+30, text="TIPS/TRICKS", font=('arial','20','bold'), justify='center')
         body_id = self.create_text(self.b_width + 2.5*self.square_size, self.y_offset+180, width = 360, text=body, justify='left', font=('arial','20'))
         self.tut_id = [head_id, body_id]
+    
+    def enable_tips(self):
+        body = ""
+        for i in self.body_text:
+            body += '\n'+self.b+i
+        
+        self.itemconfigure(self.tut_id[1], text=body)
 
 # 0. define callbacks - functions that run when events happen.
 # The callback for when the client receives a CONNACK response from the server.
@@ -348,7 +355,8 @@ def on_message(client, userdata, message):
     
     elif(message.topic == "ece180d/central/tutorial"):
         results = str(message.payload.decode())
-        header = gui.create_text()
+        gui.itemconfigure(gui.tut_id[0], text='Tutorial')
+        gui.itemconfigure(gui.tut_id[1], text=gui.b+ ' ' + results)
         
 
 if __name__ == "__main__":
