@@ -21,7 +21,7 @@ class Chess_Gui(tk.Canvas):
 
         self.flash_square = False
         self.toggle_square_id = 0
-        self.toggle_def_color = ""
+        self.toggle_def_color = []
 
         #Load in the piece images which will be used to create image objects
         self.image_dict = {}
@@ -43,7 +43,8 @@ class Chess_Gui(tk.Canvas):
                 self.square_dict[letter+num] = None
                 self.grid_dict[letter+num] = None
                 self.highlight_dict[letter+num] = None
-
+        self.b = "•"
+        self.body_text = ["Speak a move in the form letter+num (ex: \'e2\')", "Flashing squares await gesture confirmation (1/2 fingers)", "Green squares are safe, yellow are attacked, red are captures"]
         self.bg_colors = ["#F5F5DC", "#964B00"]
         self.setup_board()
 
@@ -218,6 +219,15 @@ class Chess_Gui(tk.Canvas):
         #Add text to indicate who's turn it is
         self.turn_id = self.create_text(self.b_width/2 + self.x_offset/2, self.y_offset + self.b_height, text="WHITE TO MOVE", font=('arial','15','bold'))
 
+        #Make header on the right and instructions
+        body = ""
+        for i in self.body_text:
+            body += '\n'+self.b+i
+        
+        head_id = self.create_text(self.b_width + 2*self.square_size + self.x_offset, self.y_offset+30, text="TIPS/TRICKS", font=('arial','20','bold'), justify='center')
+        body_id = self.create_text(self.b_width + 2.5*self.square_size, self.y_offset+180, width = 360, text=body, justify='left', font=('arial','20'))
+        self.tut_id = [head_id, body_id]
+
 # 0. define callbacks - functions that run when events happen.
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -231,7 +241,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("ece180d/central/start")
     client.subscribe("ece180d/central/confirm")
     client.subscribe("ece180d/central/cancel")
-    client.subscribe("ece180d/central/testing")
+    client.subscribe("ece180d/central/tutorial")
 
 # The callback of the client when it disconnects.
 def on_disconnect(client, userdata, rc):
@@ -336,7 +346,9 @@ def on_message(client, userdata, message):
         gui.flash_square = False
         gui.reset_bg_colors(True)
     
-    #elif(message.topic == "ece180d/central/testing"):
+    elif(message.topic == "ece180d/central/tutorial"):
+        results = str(message.payload.decode())
+        header = gui.create_text()
         
 
 if __name__ == "__main__":
