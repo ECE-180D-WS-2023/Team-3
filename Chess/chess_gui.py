@@ -234,6 +234,7 @@ class Chess_Gui(tk.Canvas):
             body += '\n'+self.b+i
         
         self.itemconfigure(self.tut_id[1], text=body)
+        self.itemconfigure(self.tut_id[0], text='Tips/Tricks')
 
 # 0. define callbacks - functions that run when events happen.
 # The callback for when the client receives a CONNACK response from the server.
@@ -274,6 +275,7 @@ def on_message(client, userdata, message):
                 quit()
     
     elif (message.topic == "ece180d/central/reset"):
+        gui.enable_tips()
         winner = "White" if board.outcome().winner else "Black"
         win_text = gui.create_text(400,330, text=winner + " wins!", font=('arial','10','bold'))
         x0, y0, x1, y1 = gui.bbox(win_text)
@@ -284,6 +286,7 @@ def on_message(client, userdata, message):
         board.reset()
         time.sleep(5)
         gui.delete(win_text)
+        gui.delete(rect_text)
         gui.board_to_img(board)
 
     elif(message.topic == "ece180d/central/move"):
