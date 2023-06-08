@@ -10,8 +10,8 @@ def quit_input(client: mqtt.Client, start_square):
     time.sleep(1)
 
 def eng_input(client: mqtt.Client):
-    engine = chess.engine.SimpleEngine.popen_uci("D:\Documents\ECE-180DA\\team3\Team-3\Stockfish\stockfish-windows-2022-x86-64-avx2")
-    #engine = chess.engine.SimpleEngine.popen_uci("C:/Users/neilk/Documents/ECE180/Team3/Team-3/Stockfish/stockfish-windows-2022-x86-64-avx2")
+    #engine = chess.engine.SimpleEngine.popen_uci("D:\Documents\ECE-180DA\\team3\Team-3\Stockfish\stockfish-windows-2022-x86-64-avx2")
+    engine = chess.engine.SimpleEngine.popen_uci("C:/Users/neilk/Documents/ECE180/Team3/Team-3/Stockfish/stockfish-windows-2022-x86-64-avx2")
     result = engine.play(board, chess.engine.Limit(time=0.01))
     move = result.move
     client.publish("ece180d/central/move", move.uci(), qos=1)

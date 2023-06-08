@@ -31,7 +31,7 @@ client.on_message = on_message
 client.connect_async('mqtt.eclipseprojects.io')
 client.loop_start()
 
-#serial_port = serial.Serial("PORT NAME HERE", baudrate=115200)
+serial_port = serial.Serial("COM3", baudrate=115200)
 time.sleep(0.2)
 
 while(True):

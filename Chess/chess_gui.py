@@ -26,8 +26,8 @@ class Chess_Gui(tk.Canvas):
         #Load in the piece images which will be used to create image objects
         self.image_dict = {}
 
-        #self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
-        self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
+        self.piece_path = 'C:/Users/neilk/Documents/ECE180/Chess/Piece_Images'
+        #self.piece_path = 'D:/Documents/ECE-180DA/Lab 1/180DA-Warmup/Chess/Piece_Images'
         for files in os.listdir(self.piece_path):
             name = files.split('.')[0]
             self.image_dict[name] = tk.PhotoImage(file=self.piece_path+'/'+files).subsample(10)
