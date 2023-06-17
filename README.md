@@ -25,11 +25,12 @@ There are a few steps to play the online game.
 8) The game will help you learn how to play via the tutorial 
 
 
-Link to final report: https://drive.google.com/file/d/15x3t8abrP4_JM3h9VuD8fxEyJupNVT8p/view?usp=sharing
-
 
 Our current physical board is still under contstruction but we hope you enjoy the online version! 
 
 Please fill out this survey afterwards! 
 https://forms.gle/WcFgwhSJwRM4dtgr9
+
+Link to final report: https://drive.google.com/file/d/15x3t8abrP4_JM3h9VuD8fxEyJupNVT8p/view?usp=sharing
+Some speech data collection: https://docs.google.com/spreadsheets/d/1S6CvzErLDX3UKfkAWscB4futk1oeFACJIWUkhMlK3bI/edit?usp=sharing
  
